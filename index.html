@@ -4,7 +4,38 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>I miei animali Preferiti</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <link rel="stylesheet" href="style.css" />
+
+    <script type="text/babel">
+      const AnimalsDetail = () => {
+        const animals = ["tigre", "leone", "ghepardo", "iena", "ippopotamo"];
+
+        return (
+          <details>
+            <summary>
+              <strong>Animali</strong>
+            </summary>
+            <ul>
+              {animals.map((animal, index) => (
+                <li key={index}>{animal.toUpperCase()}</li>
+              ))}
+            </ul>
+          </details>
+        );
+      };
+    </script>
+
+    <script type="text/babel">
+      const { createRoot } = ReactDOM;
+
+      const listaAnimali = document.querySelector(".lista-animali");
+
+      const rootLista = createRoot(listaAnimali);
+      rootLista.render(<AnimalsDetail />);
+    </script>
   </head>
   <body>
     <header>
