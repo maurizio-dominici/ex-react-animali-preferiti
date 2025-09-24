@@ -12,6 +12,8 @@
     <script type="text/babel">
       const { useState } = React;
 
+      const baseUrl = "http://localhost:3333";
+
       function Modal({
         title,
         content,
@@ -42,6 +44,8 @@
         const [animals, setAnimals] = useState([]);
         const [show, setshow] = useState(false);
         const [animalName, setAnimalName] = useState("");
+        const [isLoading, setIsLoading] = useState(false);
+        const [errorMessage, setErrorMessage] = useState("");
 
         const animalsChoices = [
           "Cane",
@@ -51,11 +55,39 @@
           "Panda",
         ];
 
-        const addAnimal = () => {
-          if (!animalName) return;
-          setAnimals((curr) => [...curr, animalName]);
-          setAnimalName("");
-          setshow(false);
+        const addAnimal = async () => {
+          if (!animalName.trim()) return;
+          setIsLoading(true);
+          setErrorMessage("");
+
+          try {
+            const response = await fetch(
+              `${baseUrl}/animals?search=${animalName}`
+            );
+            const [animalData] = await response.json();
+
+            if (!animalData) {
+              throw new Error("Nessun animale trovato");
+            }
+            const animal = {
+              name: animalData.name || "Nome non trovato",
+              description: animalData.description || "Descrizione non trovata",
+              image: animalData.image || null,
+            };
+            setAnimals((curr) => [...curr, animal]);
+            console.log(animal);
+          } catch (err) {
+            console.error(err);
+            const message =
+              err.message === "Nessun animale trovato"
+                ? "nessun animale trovato"
+                : "Errore durante la ricerca dell'animale";
+            setErrorMessage(message);
+          } finally {
+            setIsLoading(false);
+            setAnimalName("");
+            setshow(false);
+          }
         };
 
         return (
@@ -67,11 +99,25 @@
               <summary>
                 <strong>Animali</strong>
               </summary>
-              <ul>
+              <div>
+                {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
                 {animals.map((animal, index) => (
-                  <li key={index}>{animal.toUpperCase()}</li>
+                  <div key={index} className="card">
+                    <div>
+                      <h3>{animal.name}</h3>
+                      <p>{animal.description}</p>
+                    </div>
+                    {animal.image && (
+                      <figure>
+                        <img
+                          src={animal.image}
+                          alt={`immagine del ${animal.name}`}
+                        />
+                      </figure>
+                    )}
+                  </div>
                 ))}
-              </ul>
+              </div>
             </details>
 
             <Modal
@@ -80,11 +126,14 @@
               onConfirm={addAnimal}
               title="aggiungi animale"
               content={
-                <input
-                  type="text"
-                  value={animalName}
-                  onChange={(e) => setAnimalName(e.target.value)}
-                />
+                <>
+                  <input
+                    type="text"
+                    value={animalName}
+                    onChange={(e) => setAnimalName(e.target.value)}
+                  />
+                  {isLoading && <p> Caricamento dei dati</p>}
+                </>
               }
             />
           </>
