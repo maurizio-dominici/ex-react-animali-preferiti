@@ -10,20 +10,38 @@
     <link rel="stylesheet" href="style.css" />
 
     <script type="text/babel">
-      const AnimalsDetail = () => {
-        const animals = ["tigre", "leone", "ghepardo", "iena", "ippopotamo"];
+      const { useState } = React;
 
+      const AnimalsDetail = () => {
+        const [animals, setAnimals] = useState([]);
+
+        const animalsChoices = [
+          "Cane",
+          "Gatto",
+          "Pappagallo",
+          "Cavallo",
+          "Panda",
+        ];
+
+        const handlerButton = () => {
+          const randomIndex = Math.floor(Math.random() * animalsChoices.length);
+          const randomAnimal = animalsChoices[randomIndex];
+          setAnimals((curr) => [...curr, randomAnimal]);
+        };
         return (
-          <details>
-            <summary>
-              <strong>Animali</strong>
-            </summary>
-            <ul>
-              {animals.map((animal, index) => (
-                <li key={index}>{animal.toUpperCase()}</li>
-              ))}
-            </ul>
-          </details>
+          <>
+            <button onClick={handlerButton}>Aggiungi</button>
+            <details>
+              <summary>
+                <strong>Animali</strong>
+              </summary>
+              <ul>
+                {animals.map((animal, index) => (
+                  <li key={index}>{animal.toUpperCase()}</li>
+                ))}
+              </ul>
+            </details>
+          </>
         );
       };
     </script>
